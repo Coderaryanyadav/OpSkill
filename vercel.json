@@ -9,12 +9,6 @@
       "use": "@vercel/next"
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/"
-    }
-  ],
   "env": {
     "NODE_ENV": "production",
     "NODE_VERSION": "20.x"
