@@ -1,9 +1,9 @@
 import { eq } from 'drizzle-orm';
 import { db } from './db';
-import { users } from './schema';
+import { users, type User as DbUser } from './schema';
 import { cookies } from 'next/headers';
-import { jwtVerify, SignJWT } from 'jose';
 import { redirect } from 'next/navigation';
+import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -90,21 +90,25 @@ export async function requireAuth(role?: string) {
   return user;
 }
 
+interface User {
+  id: number;
+  email: string;
+  role: string;
+  is_banned: boolean | null;
+  password: string;
+  // Add other user properties as needed
+  [key: string]: unknown;
+}
+
 interface LoginResult {
-  user: {
-    id: number;
-    email: string;
-    role: string;
-    is_banned: boolean | null;
-    [key: string]: any;
-  };
+  user: Omit<User, 'password'>;
   token: string;
 }
 
 export async function loginUser(email: string, password: string): Promise<LoginResult> {
   const user = await db.query.users.findFirst({
     where: (users, { eq }) => eq(users.email, email),
-  });
+  }) as User | undefined;
   
   if (!user) {
     throw new Error('Invalid email or password');
@@ -120,7 +124,14 @@ export async function loginUser(email: string, password: string): Promise<LoginR
   }
   
   const token = await createToken(user.id, user.role);
-  return { user, token };
+  
+  // Omit password from the returned user object
+  const { password: _, ...userWithoutPassword } = user;
+  
+  return { 
+    user: userWithoutPassword, 
+    token 
+  };
 }
 
 export async function setAuthCookie(token: string) {
