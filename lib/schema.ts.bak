@@ -1,0 +1,342 @@
+import { sql } from 'drizzle-orm';
+import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
+import { createInsertSchema } from 'drizzle-zod';
+import { z } from 'zod';
+
+// =============================================
+// ENUMS
+// =============================================
+
+export const USER_ROLES = ['ADMIN', 'COMPANY', 'TALENT'] as const;
+export type UserRole = typeof USER_ROLES[number];
+
+export const JOB_CATEGORIES = [
+  'Event Management',
+  'Hospitality',
+  'Photography',
+  'Catering',
+  'Security',
+  'Cleaning',
+  'Technical Support',
+  'Customer Service'
+] as const;
+export type JobCategory = typeof JOB_CATEGORIES[number];
+
+export const JOB_STATUSES = [
+  'OPEN',
+  'IN_PROGRESS',
+  'COMPLETED',
+  'CANCELLED'
+] as const;
+export type JobStatus = typeof JOB_STATUSES[number];
+
+export const APPLICATION_STATUSES = [
+  'PENDING',
+  'SHORTLISTED',
+  'REJECTED',
+  'HIRED'
+] as const;
+export type ApplicationStatus = typeof APPLICATION_STATUSES[number];
+
+export const CONTRACT_STATUSES = [
+  'ACTIVE',
+  'COMPLETED',
+  'TERMINATED'
+] as const;
+export type ContractStatus = typeof CONTRACT_STATUSES[number];
+
+export const PAYMENT_STATUSES = [
+  'PENDING',
+  'PARTIALLY_PAID',
+  'PAID',
+  'REFUNDED'
+] as const;
+export type PaymentStatus = typeof PAYMENT_STATUSES[number];
+
+export const TICKET_STATUSES = [
+  'OPEN',
+  'IN_PROGRESS',
+  'RESOLVED',
+  'CLOSED'
+] as const;
+export type TicketStatus = typeof TICKET_STATUSES[number];
+
+export const TICKET_PRIORITIES = [
+  'LOW',
+  'MEDIUM',
+  'HIGH',
+  'URGENT'
+] as const;
+export type TicketPriority = typeof TICKET_PRIORITIES[number];
+
+export const PAY_TYPES = [
+  'HOURLY',
+  'DAILY',
+  'FIXED'
+] as const;
+export type PayType = typeof PAY_TYPES[number];
+
+// =============================================
+// =============================================
+// TABLES
+// =============================================
+
+/**
+ * Users table - Stores all user accounts in the system
+ */
+export const users = sqliteTable('users', {
+  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+  email: text('email').notNull().unique(),
+  password: text('password').notNull(),
+  name: text('name').notNull(),
+  role: text('role', { enum: USER_ROLES }).notNull(),
+  phone: text('phone'),
+  address: text('address'),
+  city: text('city'),
+  state: text('state'),
+  pincode: text('pincode'),
+  profile_photo: text('profile_photo'),
+  aadhaar_number: text('aadhaar_number'),
+  aadhaar_verified: integer('aadhaar_verified', { mode: 'boolean' }).default(false),
+  gst_number: text('gst_number'),
+  gst_verified: integer('gst_verified', { mode: 'boolean' }).default(false),
+  is_banned: integer('is_banned', { mode: 'boolean' }).default(false),
+  // Talent specific fields
+  skills: text('skills'),
+  bio: text('bio'),
+  experience_years: integer('experience_years'),
+  hourly_rate: integer('hourly_rate'),
+  rating: real('rating'),
+  jobs_completed: integer('jobs_completed').default(0),
+  created_at: text('created_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updated_at: text('updated_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+
+/**
+ * Jobs table - Stores job postings by companies
+ */
+export const jobs = sqliteTable('jobs', {
+  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+  company_id: integer('company_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  category: text('category', { enum: JOB_CATEGORIES }).notNull(),
+  location: text('location').notNull(),
+  pay_type: text('pay_type', { enum: PAY_TYPES }).notNull(),
+  pay_amount: real('pay_amount').notNull(),
+  start_date: text('start_date'),
+  end_date: text('end_date'),
+  status: text('status', { enum: JOB_STATUSES })
+    .notNull()
+    .default('OPEN'),
+  created_at: text('created_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updated_at: text('updated_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+
+/**
+ * Applications table - Tracks job applications from talents
+ */
+export const applications = sqliteTable('applications', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  job_id: integer('job_id')
+    .notNull()
+    .references(() => jobs.id, { onDelete: 'cascade' }),
+  talent_id: integer('talent_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  status: text('status', { enum: APPLICATION_STATUSES })
+    .notNull()
+    .default('PENDING'),
+  cover_letter: text('cover_letter'),
+  created_at: text('created_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updated_at: text('updated_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+}, (table) => ({
+  unq: sql`UNIQUE(${table.job_id}, ${table.talent_id})`,
+}));
+
+/**
+ * Contracts table - Manages work agreements between companies and talents
+ */
+export const contracts = sqliteTable('contracts', {
+  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+  job_id: integer('job_id')
+    .notNull()
+    .references(() => jobs.id, { onDelete: 'cascade' }),
+  talent_id: integer('talent_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  company_id: integer('company_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  status: text('status', { enum: CONTRACT_STATUSES })
+    .notNull()
+    .default('ACTIVE'),
+  payment_status: text('payment_status', { enum: PAYMENT_STATUSES })
+    .notNull()
+    .default('PENDING'),
+  total_amount: real('total_amount').notNull(),
+  amount_paid: real('amount_paid').default(0),
+  start_date: text('start_date').notNull(),
+  end_date: text('end_date'),
+  created_at: text('created_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updated_at: text('updated_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+
+/**
+ * Reviews table - Stores reviews between users (company <-> talent)
+ */
+export const reviews = sqliteTable('reviews', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  contract_id: integer('contract_id')
+    .notNull()
+    .references(() => contracts.id, { onDelete: 'cascade' }),
+  reviewer_id: integer('reviewer_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  reviewee_id: integer('reviewee_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  rating: integer('rating').notNull(),
+  comment: text('comment'),
+  created_at: text('created_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+}, (table) => ({
+  unq: sql`UNIQUE(${table.contract_id}, ${table.reviewer_id})`,
+}));
+
+/**
+ * Tickets table - Manages support tickets
+ */
+export const tickets = sqliteTable('tickets', {
+  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+  user_id: integer('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  subject: text('subject').notNull(),
+  description: text('description').notNull(),
+  status: text('status', { enum: TICKET_STATUSES })
+    .notNull()
+    .default('OPEN'),
+  priority: text('priority', { enum: TICKET_PRIORITIES })
+    .notNull()
+    .default('MEDIUM'),
+  created_at: text('created_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updated_at: text('updated_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+
+// =============================================
+// TYPES
+// =============================================
+
+// Base table types
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+export type Job = typeof jobs.$inferSelect;
+export type NewJob = typeof jobs.$inferInsert;
+export type Application = typeof applications.$inferSelect;
+export type NewApplication = typeof applications.$inferInsert;
+export type Contract = typeof contracts.$inferSelect;
+export type NewContract = typeof contracts.$inferInsert;
+export type Review = typeof reviews.$inferSelect;
+export type NewReview = typeof reviews.$inferInsert;
+export type Ticket = typeof tickets.$inferSelect;
+export type NewTicket = typeof tickets.$inferInsert;
+
+// =============================================
+// SCHEMA VALIDATION
+// =============================================
+
+// User validation
+export const insertUserSchema = createInsertSchema(users, {
+  email: (schema) => schema.email.email('Invalid email format'),
+  password: (schema) => schema.password.min(8, 'Password must be at least 8 characters'),
+  name: (schema) => schema.name.min(2, 'Name is required'),
+  role: (schema) => schema.role.enum(USER_ROLES),
+  phone: (schema) => schema.phone.regex(/^[0-9]{10,15}$/, 'Invalid phone number'),
+});
+
+// Job validation
+export const insertJobSchema = createInsertSchema(jobs, {
+  title: (schema) => schema.min(5, 'Title must be at least 5 characters'),
+  description: (schema) => schema.min(10, 'Description is required'),
+  category: (schema) => schema.enum(JOB_CATEGORIES),
+  status: (schema) => schema.enum(JOB_STATUSES),
+  pay_type: (schema) => schema.enum(PAY_TYPES),
+  pay_amount: (schema) => schema.min(0, 'Pay amount must be positive'),
+});
+
+// Application validation
+export const insertApplicationSchema = createInsertSchema(applications, {
+  status: (schema) => schema.enum(APPLICATION_STATUSES),
+  cover_letter: (schema) => schema.optional(),
+});
+
+// Contract validation
+export const insertContractSchema = createInsertSchema(contracts, {
+  status: (schema) => schema.enum(CONTRACT_STATUSES),
+  payment_status: (schema) => schema.enum(PAYMENT_STATUSES),
+  total_amount: (schema) => schema.min(0, 'Amount must be positive'),
+  amount_paid: (schema) => schema.min(0, 'Amount must be positive'),
+});
+
+// Review validation
+export const insertReviewSchema = createInsertSchema(reviews, {
+  rating: (schema) => schema.min(1).max(5),
+  comment: (schema) => schema.optional(),
+});
+
+// Ticket validation
+export const insertTicketSchema = createInsertSchema(tickets, {
+  subject: (schema) => schema.min(5, 'Subject is required'),
+  description: (schema) => schema.min(10, 'Description is required'),
+  status: (schema) => schema.enum(TICKET_STATUSES),
+  priority: (schema) => schema.enum(TICKET_PRIORITIES),
+});
+
+// =============================================
+// EXPORT TYPES
+// =============================================
+
+export {
+  type UserRole,
+  type JobCategory,
+  type JobStatus,
+  type ApplicationStatus,
+  type ContractStatus,
+  type PaymentStatus,
+  type TicketStatus,
+  type TicketPriority,
+  type PayType,
+  USER_ROLES,
+  JOB_CATEGORIES,
+  JOB_STATUSES,
+  APPLICATION_STATUSES,
+  CONTRACT_STATUSES,
+  PAYMENT_STATUSES,
+  TICKET_STATUSES,
+  TICKET_PRIORITIES,
+  PAY_TYPES,
+};
