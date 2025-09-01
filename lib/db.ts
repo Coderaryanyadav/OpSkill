@@ -1,8 +1,14 @@
-import { drizzle } from 'drizzle-orm/vercel-postgres';
-import { sql } from '@vercel/postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import * as schema from './schema';
 
-// Initialize Vercel Postgres database
+// Initialize Supabase Postgres connection
+const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error('POSTGRES_URL environment variable is required');
+}
+
+const sql = postgres(connectionString);
 export const db = drizzle(sql, { 
   schema,
   logger: process.env.NODE_ENV === 'development'
@@ -13,10 +19,10 @@ export async function executeQuery<T = unknown>(
   query: string
 ): Promise<{ rows: T[]; rowCount: number }> {
   try {
-    const result = await sql.query(query);
+    const result = await sql.unsafe(query);
     return {
-      rows: result.rows as T[],
-      rowCount: result.rowCount || 0
+      rows: result as unknown as T[],
+      rowCount: result.length || 0
     };
   } catch (error) {
     console.error('Database query error:', error);

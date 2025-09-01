@@ -1,8 +1,14 @@
-import { migrate } from 'drizzle-orm/vercel-postgres/migrator';
-import { sql } from '@vercel/postgres';
-import { drizzle } from 'drizzle-orm/vercel-postgres';
+import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import * as schema from '../lib/schema';
 
+const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error('POSTGRES_URL environment variable is required');
+}
+
+const sql = postgres(connectionString);
 const db = drizzle(sql, { schema });
 
 async function runMigrations() {
