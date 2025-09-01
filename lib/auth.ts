@@ -1,6 +1,5 @@
-import { eq } from 'drizzle-orm';
 import { db } from './db';
-import { users, type User as DbUser } from './schema';
+import { type User as DbUser } from './schema';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { SignJWT, jwtVerify } from 'jose';
@@ -96,8 +95,13 @@ interface User {
   role: string;
   is_banned: boolean | null;
   password: string;
-  // Add other user properties as needed
-  [key: string]: unknown;
+  name?: string;
+  phone?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  // Add other specific user properties as needed
 }
 
 interface LoginResult {
