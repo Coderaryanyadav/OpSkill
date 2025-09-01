@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const mockJobs = [
   {
@@ -55,17 +56,18 @@ export default function Jobs() {
     );
   });
 
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link href="/" className="text-2xl font-bold text-indigo-600">OpSkill</Link>
+          <div className="flex justify-between items-center py-4">
+            <Link href="/" className="text-xl font-bold text-indigo-600">OpSkill</Link>
             <nav className="hidden md:flex space-x-8">
               <Link href="/jobs" className="text-indigo-600 font-medium">Find Jobs</Link>
               <Link href="/talent" className="text-gray-500 hover:text-gray-900">Find Talent</Link>
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-900">Dashboard</Link>
             </nav>
             <div className="flex items-center space-x-4">
               <Link href="/auth/signin" className="text-gray-500 hover:text-gray-900">Sign In</Link>
@@ -175,9 +177,9 @@ export default function Jobs() {
                         <span className="text-sm text-gray-500">{job.postedAt}</span>
                         <Link 
                           href={`/jobs/${job.id}`}
-                          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
-                          Apply Now
+                          View Details
                         </Link>
                       </div>
                     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const mockTalent = [
   {
@@ -60,17 +61,18 @@ export default function Talent() {
     );
   });
 
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link href="/" className="text-2xl font-bold text-indigo-600">OpSkill</Link>
+          <div className="flex justify-between items-center py-4">
+            <Link href="/" className="text-xl font-bold text-indigo-600">OpSkill</Link>
             <nav className="hidden md:flex space-x-8">
               <Link href="/jobs" className="text-gray-500 hover:text-gray-900">Find Jobs</Link>
               <Link href="/talent" className="text-indigo-600 font-medium">Find Talent</Link>
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-900">Dashboard</Link>
             </nav>
             <div className="flex items-center space-x-4">
               <Link href="/auth/signin" className="text-gray-500 hover:text-gray-900">Sign In</Link>
@@ -208,9 +210,9 @@ export default function Talent() {
                   </div>
 
                   <div className="flex space-x-2">
-                    <Link
-                      href={`/talent/${person.id}`}
-                      className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 text-center"
+                    <Link 
+                      href={`/talent/${person.id}`} 
+                      className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                       View Profile
                     </Link>

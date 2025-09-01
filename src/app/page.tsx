@@ -1,120 +1,133 @@
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
+import { Search, Briefcase, User, Code, Zap } from "lucide-react"
+
 export default function Home() {
+  const features = [
+    {
+      icon: <Search className="h-6 w-6 text-primary" />,
+      title: "Find Work",
+      description: "Browse thousands of jobs from top companies and find your perfect match."
+    },
+    {
+      icon: <Briefcase className="h-6 w-6 text-primary" />,
+      title: "Hire Talent",
+      description: "Connect with skilled professionals ready to work on your projects."
+    },
+    {
+      icon: <User className="h-6 w-6 text-primary" />,
+      title: "Build Your Profile",
+      description: "Showcase your skills and experience to attract the best opportunities."
+    },
+    {
+      icon: <Code className="h-6 w-6 text-primary" />,
+      title: "Multiple Categories",
+      description: "From development to design, we have opportunities in every field."
+    }
+  ]
+
+  const stats = [
+    { value: "50K+", label: "Active Users" },
+    { value: "10K+", label: "Jobs Posted" },
+    { value: "95%", label: "Success Rate" },
+    { value: "24/7", label: "Support" }
+  ]
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-indigo-600">OpSkill</h1>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-gray-500 hover:text-gray-900">Find Jobs</a>
-              <a href="#" className="text-gray-500 hover:text-gray-900">Find Talent</a>
-              <a href="#" className="text-gray-500 hover:text-gray-900">About</a>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <button className="text-gray-500 hover:text-gray-900">Sign In</button>
-              <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
-                Sign Up
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center">
-          <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-            <span className="block">Connect with</span>
-            <span className="block text-indigo-600">Skilled Professionals</span>
-          </h1>
-          <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-            OpSkill is the premier platform connecting companies with talented freelancers across event management, hospitality, photography, and more.
-          </p>
-          <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-            <div className="rounded-md shadow">
-              <button className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
-                Find Talent
-              </button>
-            </div>
-            <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-              <button className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
-                Find Jobs
-              </button>
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
+      
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted/30">
+          <div className="container relative z-10 mx-auto flex flex-col items-center px-4 py-20 text-center sm:px-6 lg:px-8">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+              <span className="block">Find the perfect</span>
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                freelance talent
+              </span>
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
+              Connect with top professionals and get your projects done on time and on budget.
+            </p>
+            <div className="mt-10 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0">
+              <Button size="lg" className="px-8 py-6 text-base font-semibold">
+                <Zap className="mr-2 h-5 w-5" />
+                Get Started for Free
+              </Button>
+              <Button variant="outline" size="lg" className="px-8 py-6 text-base font-semibold">
+                How It Works
+              </Button>
             </div>
           </div>
-        </div>
+          <div className="absolute inset-0 -z-10 opacity-10">
+            <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+          </div>
+        </section>
 
-        {/* Features */}
-        <div className="mt-20">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="text-indigo-600 mb-4">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Event Management</h3>
-              <p className="text-gray-500">Professional event planners and coordinators for all your special occasions.</p>
+        {/* Features Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Why Choose OpSkill?
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                We provide the best platform for freelancers and clients to connect and collaborate.
+              </p>
             </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="text-indigo-600 mb-4">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Photography</h3>
-              <p className="text-gray-500">Capture your moments with skilled photographers and videographers.</p>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="text-indigo-600 mb-4">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Hospitality</h3>
-              <p className="text-gray-500">Experienced hospitality professionals for restaurants, hotels, and events.</p>
+            <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {features.map((feature, index) => (
+                <div key={index} className="group rounded-xl border bg-card p-6 shadow-sm transition-all hover:shadow-md">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    {feature.icon}
+                  </div>
+                  <h3 className="mb-2 text-lg font-semibold">{feature.title}</h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Stats */}
-        <div className="mt-20 bg-white rounded-lg shadow-lg p-8">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-indigo-600">1000+</div>
-              <div className="text-gray-500 mt-2">Active Freelancers</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-indigo-600">500+</div>
-              <div className="text-gray-500 mt-2">Companies</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-indigo-600">2000+</div>
-              <div className="text-gray-500 mt-2">Jobs Completed</div>
+        {/* CTA Section */}
+        <section className="bg-gradient-to-r from-primary/5 to-secondary/5 py-20">
+          <div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Ready to get started?
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+              Join thousands of professionals and businesses already using OpSkill to grow their careers and businesses.
+            </p>
+            <div className="mt-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0">
+              <Button size="lg" className="px-8 py-6 text-base font-semibold">
+                Sign Up Free
+              </Button>
+              <Button variant="outline" size="lg" className="px-8 py-6 text-base font-semibold">
+                Contact Sales
+              </Button>
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+              {stats.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className="text-4xl font-bold text-primary">{stat.value}</div>
+                  <div className="mt-2 text-sm font-medium text-muted-foreground">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold mb-4">OpSkill</h3>
-            <p className="text-gray-400">Connecting talent with opportunity</p>
-            <div className="mt-4 text-sm text-gray-400">
-              © 2025 OpSkill. All rights reserved.
-            </div>
-          </div>
-        </div>
-      </footer>
+      
+      <Footer />
     </div>
-  );
+  )
 }
